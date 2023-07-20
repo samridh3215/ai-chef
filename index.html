@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <title>AI CHEF</title>
+</head>
+
+<body>
+     <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <p class="navbar-brand"> AI CHEF</p>
+          </div>
+          <ul class="nav justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link mod-link" aria-current="page" href="#" onclick="showFind()">Find Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a id="suggest" class="nav-link mod-link" onclick="showSuggest()" href="#">Suggest Recipe</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="suggest-container">
+        <div>
+        <form>
+            <label for="">Ingredients</label>
+            <textarea name=""  id = "ingredients" cols="30" rows="5">Enter the ingredients</textarea>
+            <label for="">Additional Requirements</label>
+            <input id="additional" type="text" >
+            <button class="send-btn" id="send-btn1">Enter</button>
+        </form>
+        </div>
+      </div>
+      <div class="find-container">
+        <div>
+        <form>
+            <label for="">Recipe for</label>
+            <input id="find-recipe" type="text" >
+            <button class="send-btn" id="send-btn2">Enter</button>
+        </form>
+      </div>
+      </div>
+      <div class="output-container">
+        <img src="" alt="cook-img" class="output-image">
+        <h1 class="output-heading"></h1>
+        <p class="output-text"></p>
+        <a href="/download">Download PDF</a>
+      </div>
+
+
+      <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+      <script>
+        $('.output-container').hide()
+        $(".suggest-container").hide()
+        function showFind(){
+          $(".find-container").show(1000)
+          $(".suggest-container").hide(1000)
+          $('.output-container').hide()
+          
+        }
+        function showSuggest(){
+          $(".find-container").hide(1000)
+          $(".suggest-container").show(1000)
+          $('.output-container').hide()
+
+        }
+
+        function test(event){
+          event.preventDefault();
+          var recipe = $("#find-recipe").val()
+          var req = {'role':'user', 'content':`${recipe}`}
+          $.ajax({
+            type:'POST',
+            url:'/test',
+            data: req
+          }).done((response)=>{console.log(JSON.parse(response))
+            $('.output-container').show()
+          }).fail((err)=>{console.log(err)})
+        }
+
+        function reqFind(event){
+          event.preventDefault()
+          var recipe = $("#find-recipe").val()
+          console.log(recipe)
+          $.ajax({
+            type:"POST",
+            url:'/new',
+            data:{'role':'user', 'content':`${recipe}`}
+          }).done((res)=>{
+              console.log(typeof res); 
+              $('.output-text').html(res)
+              $('.output-container').show(500)
+            }).fail((error)=>console.log(error))
+
+        }
+
+        function reqSuggest(event){
+          event.preventDefault()
+          var ingredients = $("#ingredients").val()
+          console.log(ingredients)
+          $.ajax({
+            type:"POST",
+            url:'/suggest',
+            data:{'role':'user', 'content':`${ingredients}`}
+          }).done((res)=>{
+              console.log(res); 
+              $('.output-text').html(res)
+              $('.output-container').show(500)
+            }).fail((error)=>console.log(error))
+
+        }
+
+        $("#send-btn2").click(()=>{
+          reqFind(event)
+        })
+        $("#send-btn1").click(()=>{
+          reqSuggest(event)
+        })
+
+      </script>
+
+
+    </body>
+
+
+</html>
