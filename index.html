@@ -53,7 +53,7 @@
       </div>
     </div>
       <div class="output-container">
-        <!-- <img src="" alt="cook-img" class="output-image"> -->
+        
         <h1 class="output-heading"></h1>
         <p class="output-text"></p>
         <a href="/download">Download PDF</a>
@@ -102,8 +102,11 @@
             url:'/new',
             data:{'role':'user', 'content':`${recipe}`}
           }).done((res)=>{
-              console.log(typeof res); 
-              $('.output-text').html(res)
+              console.log(res); 
+              res = JSON.parse(res)
+              // $('.output-text').html(res['text'])
+              $('.output-text').html(`<img src=${res.img} alt="cook-img" class="output-image"> <p class="output-text">${res.text}</p>`)
+              console.log(res.img)
               $('.output-container').show(500)
               $('.gif').hide()
             }).fail((error)=>console.log(error))

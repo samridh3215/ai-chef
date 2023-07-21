@@ -179,7 +179,9 @@ app.get('/download', (req, res)=>{
 })
 
 app.post('/new', async (req, res)=>{
+    var prompt = req.body.content
 
+    console.log("prompt", prompt)
     newMessages.push(req.body)
     pdfDoc.fillColor('blue').text(req.body.content+'\n')
     console.log("newMessages", newMessages)
@@ -193,8 +195,14 @@ app.post('/new', async (req, res)=>{
       var formatted = formatRecipeParagraph(completion.data.choices[0].message.content)
       console.log("formatted", formatted)
       newMessages.push(completion.data.choices[0].message)
+      const img = await openai.createImage({
+        prompt: `${prompt}`,
+        n: 1,
+        size: "256x256",
+      });
     //   res.send(completion.data.choices[0].message)
-      res.send(formatted)
+    console.log(img)
+      res.send(JSON.stringify({'text':formatted, 'img':img.data.data[0].url}))
 })
 
 app.post('/suggest', async (req, res)=>{
@@ -215,10 +223,15 @@ app.post('/suggest', async (req, res)=>{
       suggestMessages.push(messages)
       res.send(messages.content)
 })
-app.post('/test', (req, res)=>{
+app.post('/test', async (req, res)=>{
     console.log(req.body)
     var object = {'role':'user', 'content':'hello'}
-    res.send(JSON.stringify(object))
+    const img = await openai.createImage({
+      prompt: "jalebi",
+      n: 1,
+      size: "256x256",
+    });
+    console.log(img.data.data[0].url)
 })
 
 
