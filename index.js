@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 const fs = require('fs')
 const PDFDocument = require('pdfkit');
 const { Configuration, OpenAIApi } = require("openai");
+const { time } = require('console');
 require('dotenv').config();
 
 const app = express()
@@ -35,26 +36,48 @@ var newMessages= [{"role": "system", "content": `You are a professional Chef, th
     Conclusion:
     `}];
 var suggestMessages = [{"role": "system", "content": `you are a professional chef who suggests a recipe based on the items that the user lists and do not add new ingredients unless necessary
+give me recipes for the given a list of ingredients, do not suggest any extra ingredients.
 ###
-Based on the ingredients you listed, I recommend making a simple but delicious Banana Pudding. Here's the recipe:
+ingredients: milk,maida,cocoa powder,sugar
+
+recipe: With the ingredients milk, maida (all-purpose flour), cocoa powder, and sugar, I can suggest two classic recipes: Chocolate Pudding and Chocolate Pancakes. These recipes use only the ingredients you've provided and nothing extra. Let's get cooking!
+
+1. Chocolate Pudding:
 
 Ingredients:
 - 2 cups milk
-- 1/4 cup sugar
-- 2 ripe bananas
+- 1/4 cup maida (all-purpose flour)
+- 1/4 cup cocoa powder
+- 1/2 cup sugar
 
 Instructions:
-1. In a medium saucepan, combine the milk and sugar. Heat over low heat, stirring constantly, until the sugar has dissolved. Remove from heat and let it cool slightly.
-2. Meanwhile, slice the bananas into thin rounds.
-3. In individual serving bowls or a large glass dish, layer some banana slices at the bottom.
-4. Pour half of the cooled milk mixture over the bananas.
-5. Repeat the layering process with the remaining banana slices and milk mixture.
-6. Cover the dish and refrigerate for at least 2 hours, or until the pudding has thickened.
-7. Serve chilled and enjoy!
+1. In a medium-sized saucepan, whisk together the maida, cocoa powder, and sugar until well combined.
+2. Gradually add the milk to the dry ingredients while continuously whisking to avoid lumps.
+3. Place the saucepan on medium heat and cook the mixture while stirring constantly until it thickens and reaches a pudding-like consistency. This should take about 5-7 minutes.
+4. Once the pudding is thick and smooth, remove it from the heat and let it cool for a few minutes.
+5. Transfer the pudding to serving dishes or small bowls and refrigerate until it's chilled and set.
+6. Serve the chocolate pudding chilled, and you can optionally top it with some whipped cream or chocolate shavings.
 
-Note: You can also add a sprinkle of cinnamon or a dollop of whipped cream on top for extra flavor and presentation.
-###
+2. Chocolate Pancakes:
+
 Ingredients:
+- 1 cup maida (all-purpose flour)
+- 2 tablespoons cocoa powder
+- 2 tablespoons sugar
+- 1 cup milk
+- Butter or oil for cooking
+
+Instructions:
+1. In a mixing bowl, whisk together the maida, cocoa powder, and sugar until well combined.
+2. Gradually add the milk to the dry ingredients while whisking until you have a smooth pancake batter. The consistency should be similar to traditional pancake batter.
+3. Heat a non-stick pan or griddle over medium heat. Add a small amount of butter or oil to grease the surface.
+4. Pour a small ladleful of the pancake batter onto the pan to form a round pancake. Cook for about 2-3 minutes or until bubbles start to form on the surface.
+5. Flip the pancake and cook the other side for another 1-2 minutes until it's cooked through.
+6. Repeat the process with the remaining batter.
+7. Serve the chocolate pancakes warm, and you can enjoy them as they are or with a drizzle of maple syrup or chocolate sauce.
+
+These recipes should make good use of the ingredients you have without the need for anything extra. Enjoy your chocolatey treats! Let me know if there's anything else I can help you with. Happy cooking!
+Ingredients: 
 Instructions:
  `}]
 
@@ -140,9 +163,10 @@ function formatRecipeParagraph(recipeParagraph) {
   
     const instructionsSection = ingredientsParagraph.slice(match.index + match[0].length).trim();
   
-    const formattedParagraph = `Based on the ingredients you listed, I recommend making a simple but delicious Banana Pudding. Here's the recipe:\n\nIngredients:\n${formattedIngredients}\n\nInstructions:\n${instructionsSection}\n`;
+    const formattedParagraph1 = `Based on the ingredients you listed, I recommend making a simple but delicious dish. Here's the recipe<br/>:\n\n<br/><p>Ingredients:<br/>\n${formattedIngredients}</p>\n\n<p>Instructions:<br/>\n${instructionsSection}</p>\n`;
+    const formattedParagraph2 = `Based on the ingredients you listed, I recommend making a simple but delicious dish. Here's the recipe:\n\n>Ingredients:\n${formattedIngredients}\n\nInstructions:\n${instructionsSection}\n`;
   
-    return formattedParagraph;
+    return {formattedParagraph1, formattedParagraph2};
   }
 app.get('/home', (req, res) => {
   res.sendFile(__dirname+"/index.html")
@@ -150,12 +174,14 @@ app.get('/home', (req, res) => {
 
 app.get('/download', (req, res)=>{
     pdfDoc.end();
-    res.download(__dirname+"/Recipe.pdf", (err)=>console.log(err))
+    
+    setTimeout(()=>{res.download(__dirname+"/Recipe.pdf", (err)=>console.log(err))}, 2000)
 })
 
 app.post('/new', async (req, res)=>{
 
     newMessages.push(req.body)
+    pdfDoc.fillColor('blue').text(req.body.content+'\n')
     console.log("newMessages", newMessages)
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
@@ -163,6 +189,7 @@ app.post('/new', async (req, res)=>{
         temperature:1.73
       });
       console.log(completion.data);
+      pdfDoc.fillColor('red').text(completion.data.choices[0].message.content)
       var formatted = formatRecipeParagraph(completion.data.choices[0].message.content)
       console.log("formatted", formatted)
       newMessages.push(completion.data.choices[0].message)
@@ -174,7 +201,7 @@ app.post('/suggest', async (req, res)=>{
     console.log(req.body)
     var messages;
     suggestMessages.push(req.body)
-    pdfDoc.fillColor('blue').text(req.body.role+': '+req.body.content)
+    pdfDoc.fillColor('blue').text(req.body.content)
     console.log("suggestMessages", suggestMessages)
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
@@ -182,10 +209,11 @@ app.post('/suggest', async (req, res)=>{
       });
       console.log(completion.data);
       messages = completion.data.choices[0].message
-      var formatted = formatIngredientsParagraph(messages.content)
+      var formatted= formatIngredientsParagraph(messages.content)
+    pdfDoc.fillColor('red').text(messages.content)
       console.log("formated", formatted)
       suggestMessages.push(messages)
-      res.send(formatted)
+      res.send(messages.content)
 })
 app.post('/test', (req, res)=>{
     console.log(req.body)
@@ -194,27 +222,7 @@ app.post('/test', (req, res)=>{
 })
 
 
-
-/*app.post('/suggest', (req, res)=>{
-    var options = {
-        headers:{
-            'Authorization' : `Bearer ${key}`,
-            'Content-Type': 'application/json' 
-        },
-        data: JSON.stringify({
-            'model': 'gpt-3.5-turbo',
-            'messages': [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": "Hello!"}]
-        })
-    }
-    axios.post(url, options).then(response => {
-                        console.log(response);
-                        res.send(JSON.stringify(response.data))
-                    }).catch(error => {
-                        console.log(error);
-                    });
-    console.log("request at /suggest", req)
-})*/
-app.listen(3001, () => {
+app.listen(3000, () => {
 try{
   console.log(`App listening....`)
 }catch{
