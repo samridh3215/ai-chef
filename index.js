@@ -23,94 +23,135 @@ let pdfDoc = new PDFDocument;
 pdfDoc.pipe(fs.createWriteStream('Recipe.pdf'));
 
 
-var newMessages= [{"role": "system", "content": `You are a professional Chef, that answers in the following format:
+var newMessages= [{"role": "system", "content": `You're a professional Chef, give recipes for the provided dish:
+return the output as html elements within only a div element
 ###
-    Description: Gulab jamun is a delicious and popular Indian dessert made from fried milk solids soaked in a sugar syrup flavored with rose water or saffron. It has a rich and sweet taste, and it's a perfect way to end a meal.
-    Ingredients: - 1 cup of milk powder - 1/4 cup of all-purpose flour - a pinch of baking powder - 2 tablespoons of ghee (clarified butter) - 1/4 cup of milk - 1 tablespoon of chopped almonds or pistachios (optional) - oil for frying For the sugar syrup: - 1 cup of sugar - 1 cup of water - a few drops of rose water or a pinch of saffron strands 
-    Instructions: 1. In a mixing bowl, combine the milk powder, all-purpose flour, and baking powder. Mix well, ensuring there are no lumps. 2. Add the ghee to the dry mixture and rub it in with your fingertips until the mixture resembles breadcrumbs. 3. Gradually add milk to the mixture, kneading gently to form a soft and smooth dough. Be careful not to overwork the dough. 4. Divide the dough into small portions and shape them into round balls. You can make them about the size of a small marble. 5. In a deep pan, heat oil over medium heat for frying. Once the oil is hot, reduce the heat to low and carefully add the gulab jamun balls. Fry them until they turn golden brown, stirring occasionally for even cooking. Make sure to fry them in small batches to avoid overcrowding the pan. 6. While the gulab jamun is frying, prepare the sugar syrup. In a separate saucepan, combine the sugar and water. Bring the mixture to a boil and cook until the sugar is dissolved. Add rose water or saffron strands to the syrup, stirring well. 7. Once the gulab jamun balls are properly fried, remove them from the oil and drain excess oil on a paper towel. 8. Immediately transfer the fried balls into the warm sugar syrup. Allow them to soak in the syrup for at least 30 minutes so that they absorb the flavors and soften. 9. After soaking, garnish the gulab jamun with chopped almonds or pistachios if desired, and serve them warm or at room temperature.
-    Conclusion: Gulab jamun can be enjoyed on its own or with a scoop of vanilla ice cream. It is a delightful sweet treat that's sure to impress your guests or satisfy your own cravings.
-    ###
-    Description:
-    Ingredients:
-    Instructions:
-    Conclusion:
+dish:Chocolate Milkshake
+
+recipe:
+<div>
+  <h1>Chocolate Milkshake</h1>
+  <h2>Ingredients:</h2>
+  <ul>
+    <li>2 cups vanilla ice cream</li>
+    <li>1 cup milk</li>
+    <li>3 tablespoons chocolate syrup</li>
+    <li>Whipped cream (for garnish)</li>
+    <li>Chocolate shavings (for garnish)</li>
+  </ul>
+
+  <h2>Instructions:</h2>
+  <ol>
+    <li>Add the vanilla ice cream, milk, and chocolate syrup to a blender.</li>
+    <li>Blend on high speed until the mixture is smooth and creamy.</li>
+    <li>Pour the milkshake into a glass.</li>
+    <li>Garnish with whipped cream and chocolate shavings.</li>
+    <li>Optional: Drizzle some additional chocolate syrup on top for extra indulgence.</li>
+    <li>Serve immediately and enjoy!</li>
+  </ol>
+</div>
+
+###
+dish:Ramen with Egg
+
+recipe:
+<div>
+  <h1>Ramen with Egg</h1>
+  <h2>Ingredients:</h2>
+  <ul>
+    <li>2 packs of instant ramen noodles</li>
+    <li>4 cups water</li>
+    <li>2 large eggs</li>
+    <li>2 tablespoons soy sauce</li>
+    <li>2 tablespoons sesame oil</li>
+    <li>2 green onions, sliced</li>
+    <li>1 tablespoon sesame seeds (optional)</li>
+    <li>Chili oil or hot sauce (optional, for extra spice)</li>
+  </ul>
+
+  <h2>Instructions:</h2>
+  <ol>
+    <li>Boil the water in a large pot and cook the ramen noodles according to the package instructions. Drain the noodles and set them aside.</li>
+    <li>While the noodles are cooking, prepare the eggs. In a separate saucepan, bring water to a boil and carefully add the eggs. Boil for 7 minutes for a slightly soft yolk or adjust the cooking time to your preference.</li>
+    <li>Once the eggs are done, transfer them to a bowl of ice-cold water to stop the cooking process. Peel the eggs and set them aside.</li>
+    <li>In a small bowl, mix soy sauce and sesame oil to create the seasoning sauce.</li>
+    <li>Heat the sesame oil in a pan over medium heat. Add the cooked ramen noodles and the seasoning sauce. Toss everything together until the noodles are well coated with the sauce.</li>
+    <li>Divide the seasoned ramen noodles into serving bowls.</li>
+    <li>Cut the boiled eggs in half and place one or two halves on top of each bowl of ramen.</li>
+    <li>Garnish the ramen with sliced green onions and sesame seeds (if using).</li>
+    <li>For an extra kick, drizzle some chili oil or hot sauce on top.</li>
+    <li>Serve hot and enjoy your delicious Ramen with Egg!</li>
+  </ol>
+</div>
+###
+Dish:
+recipe:
     `}];
-var suggestMessages = [{"role": "system", "content": `you are a professional chef who suggests a recipe based on the items that the user lists and do not add new ingredients unless necessary
-give me recipes for the given a list of ingredients, do not suggest any extra ingredients.
+var suggestMessages = [{"role": "system", "content": `You're a professional Chef, give recipes when ingredients are provided to you, do not give extra ingredients if possible:
+return the output as html elements within only a div element
 ###
-ingredients: milk,maida,cocoa powder,sugar
+ingredients:milk,maida,cocoa powder,sugar
+recipe:
+<div>
+  <h2>Chocolate Pancakes</h2>
+  <h3>Ingredients:</h3>
+  <ul>
+    <li>milk</li>
+    <li>maida (all-purpose flour)</li>
+    <li>cocoa powder</li>
+    <li>sugar</li>
+  </ul>
+  <h3>Instructions:</h3>
+  <ol>
+    <li>In a mixing bowl, combine 1 cup of maida, 2 tablespoons of cocoa powder, and 2 tablespoons of sugar.</li>
+    <li>Gradually add 1 cup of milk while stirring to form a smooth batter.</li>
+    <li>Heat a non-stick pan over medium heat and lightly grease it.</li>
+    <li>Pour a ladleful of the pancake batter onto the pan and spread it slightly to form a circle.</li>
+    <li>Cook until bubbles start to appear on the surface, then flip the pancake and cook the other side until it's cooked through.</li>
+    <li>Repeat the process with the remaining batter.</li>
+    <li>Serve the chocolate pancakes warm with your favorite toppings like maple syrup, fresh berries, or whipped cream.</li>
+  </ol>
+</div>
+###
+ingredients:Pork chops
+Eggplant
+Chickpeas
+Red bell peppers
+Cherry tomatoes
 
-recipe: With the ingredients milk, maida (all-purpose flour), cocoa powder, and sugar, I can suggest two classic recipes: Chocolate Pudding and Chocolate Pancakes. These recipes use only the ingredients you've provided and nothing extra. Let's get cooking!
+recipe:
+<div>
+  <h2>Pork Chops with Roasted Vegetables</h2>
+  <h3>Ingredients:</h3>
+  <ul>
+    <li>Pork chops</li>
+    <li>Eggplant</li>
+    <li>Chickpeas</li>
+    <li>Red bell peppers</li>
+    <li>Cherry tomatoes</li>
+  </ul>
+  <h3>Instructions:</h3>
+  <ol>
+    <li>Preheat your oven to 200°C (400°F).</li>
+    <li>Season the pork chops with salt and pepper on both sides.</li>
+    <li>Cut the eggplant and red bell peppers into bite-sized pieces.</li>
+    <li>Drain and rinse the chickpeas.</li>
+    <li>In a large mixing bowl, toss the eggplant, red bell peppers, chickpeas, and cherry tomatoes with a drizzle of olive oil, salt, and pepper.</li>
+    <li>Spread the vegetables evenly on a baking sheet.</li>
+    <li>In a separate pan, heat some oil over medium-high heat.</li>
+    <li>Add the seasoned pork chops to the pan and sear them for about 3-4 minutes on each side until they get a golden brown crust.</li>
+    <li>Transfer the seared pork chops on top of the vegetables on the baking sheet.</li>
+    <li>Place the baking sheet in the preheated oven and roast for 15-20 minutes or until the pork chops are fully cooked and the vegetables are tender.</li>
+    <li>Remove from the oven and let the pork chops rest for a couple of minutes before serving.</li>
+    <li>Plate the roasted vegetables alongside the pork chops and serve hot.</li>
+  </ol>
+</div>
 
-1. Chocolate Pudding:
+###
+ingredients:
+recipe:
 
-Ingredients:
-- 2 cups milk
-- 1/4 cup maida (all-purpose flour)
-- 1/4 cup cocoa powder
-- 1/2 cup sugar
-
-Instructions:
-1. In a medium-sized saucepan, whisk together the maida, cocoa powder, and sugar until well combined.
-2. Gradually add the milk to the dry ingredients while continuously whisking to avoid lumps.
-3. Place the saucepan on medium heat and cook the mixture while stirring constantly until it thickens and reaches a pudding-like consistency. This should take about 5-7 minutes.
-4. Once the pudding is thick and smooth, remove it from the heat and let it cool for a few minutes.
-5. Transfer the pudding to serving dishes or small bowls and refrigerate until it's chilled and set.
-6. Serve the chocolate pudding chilled, and you can optionally top it with some whipped cream or chocolate shavings.
-
-2. Chocolate Pancakes:
-
-Ingredients:
-- 1 cup maida (all-purpose flour)
-- 2 tablespoons cocoa powder
-- 2 tablespoons sugar
-- 1 cup milk
-- Butter or oil for cooking
-
-Instructions:
-1. In a mixing bowl, whisk together the maida, cocoa powder, and sugar until well combined.
-2. Gradually add the milk to the dry ingredients while whisking until you have a smooth pancake batter. The consistency should be similar to traditional pancake batter.
-3. Heat a non-stick pan or griddle over medium heat. Add a small amount of butter or oil to grease the surface.
-4. Pour a small ladleful of the pancake batter onto the pan to form a round pancake. Cook for about 2-3 minutes or until bubbles start to form on the surface.
-5. Flip the pancake and cook the other side for another 1-2 minutes until it's cooked through.
-6. Repeat the process with the remaining batter.
-7. Serve the chocolate pancakes warm, and you can enjoy them as they are or with a drizzle of maple syrup or chocolate sauce.
-
-These recipes should make good use of the ingredients you have without the need for anything extra. Enjoy your chocolatey treats! Let me know if there's anything else I can help you with. Happy cooking!
-Ingredients: 
-Instructions:
- `}]
-
-async function fetchImagePrompt(description) {
-    try {
-      const response = await fetchAPI(url, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + APIKEY
-        },
-        body: JSON.stringify({
-          'model': 'text-davinci-003',
-          'prompt': `Give a short description of an image that could be used to advertise a recipe based the dish's name. The description should be rich in visual detail but contain no names.
-          ###
-      Description: Gulab jamun is a delicious and popular Indian dessert made from fried milk solids soaked in a sugar syrup flavored with rose water or saffron. It has a rich and sweet taste, and it's a perfect way to end a meal.
-      Ingridients: - 1 cup of milk powder - 1/4 cup of all-purpose flour - a pinch of baking powder - 2 tablespoons of ghee (clarified butter) - 1/4 cup of milk - 1 tablespoon of chopped almonds or pistachios (optional) - oil for frying For the sugar syrup: - 1 cup of sugar - 1 cup of water - a few drops of rose water or a pinch of saffron strands 
-      Instructions: 1. In a mixing bowl, combine the milk powder, all-purpose flour, and baking powder. Mix well, ensuring there are no lumps. 2. Add the ghee to the dry mixture and rub it in with your fingertips until the mixture resembles breadcrumbs. 3. Gradually add milk to the mixture, kneading gently to form a soft and smooth dough. Be careful not to overwork the dough. 4. Divide the dough into small portions and shape them into round balls. You can make them about the size of a small marble. 5. In a deep pan, heat oil over medium heat for frying. Once the oil is hot, reduce the heat to low and carefully add the gulab jamun balls. Fry them until they turn golden brown, stirring occasionally for even cooking. Make sure to fry them in small batches to avoid overcrowding the pan. 6. While the gulab jamun is frying, prepare the sugar syrup. In a separate saucepan, combine the sugar and water. Bring the mixture to a boil and cook until the sugar is dissolved. Add rose water or saffron strands to the syrup, stirring well. 7. Once the gulab jamun balls are properly fried, remove them from the oil and drain excess oil on a paper towel. 8. Immediately transfer the fried balls into the warm sugar syrup. Allow them to soak in the syrup for at least 30 minutes so that they absorb the flavors and soften. 9. After soaking, garnish the gulab jamun with chopped almonds or pistachios if desired, and serve them warm or at room temperature.
-      Conclusion: Gulab jamun can be enjoyed on its own or with a scoop of vanilla ice cream. It is a delightful sweet treat that's sure to impress your guests or satisfy your own cravings.
-      ###
-      Description:${THE_DESCRIPTOION_OF_THE_FOOD}
-      image description: 
-          `,
-          temperature: 0.8,
-          max_tokens: 100
-        })
-      });
-    const data = await response.json();
-    const imagePrompt = data.choices[0].text.trim();
-    }catch{
-        console.log("NAH FAM")
-    }
-}
+`}]
 
 function formatRecipeParagraph(recipeParagraph) {
     if (typeof recipeParagraph !== 'string') {
@@ -235,7 +276,7 @@ app.post('/test', async (req, res)=>{
 })
 
 
-app.listen(3000, () => {
+app.listen(3001, () => {
 try{
   console.log(`App listening....`)
 }catch{
